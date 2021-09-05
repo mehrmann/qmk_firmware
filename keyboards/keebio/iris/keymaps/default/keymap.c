@@ -1,6 +1,5 @@
 #include QMK_KEYBOARD_H
 
-extern keymap_config_t keymap_config;
 
 #define _QWERTY 0
 #define _LOWER 1
@@ -113,7 +112,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-void encoder_update_user(uint8_t index, bool clockwise) {
+bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
         if (clockwise) {
             tap_code(KC_VOLU);
@@ -128,4 +127,5 @@ void encoder_update_user(uint8_t index, bool clockwise) {
             tap_code(KC_PGUP);
         }
     }
+    return true;
 }

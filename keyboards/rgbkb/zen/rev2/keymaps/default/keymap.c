@@ -1,6 +1,5 @@
 #include QMK_KEYBOARD_H
 
-extern keymap_config_t keymap_config;
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
@@ -68,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-void encoder_update_user(uint8_t index, bool clockwise) {
+bool encoder_update_user(uint8_t index, bool clockwise) {
   if (index == 0) { /* First encoder */
     if (clockwise) {
       tap_code(KC_PGDN);
@@ -82,6 +81,7 @@ void encoder_update_user(uint8_t index, bool clockwise) {
       tap_code(KC_DOWN);
     }
   }
+    return true;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -103,7 +103,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 
-#if OLED_DRIVER_ENABLE
+#if OLED_ENABLE
 const char* layer_name_user(uint32_t layer) {
   switch (layer) {
     case _QWERTY:

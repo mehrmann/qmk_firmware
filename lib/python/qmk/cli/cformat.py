@@ -1,34 +1,28 @@
-"""Format C code according to QMK's style.
+"""Point people to the new command name.
 """
-import os
-import subprocess
+import sys
+from pathlib import Path
 
 from milc import cli
 
 
-@cli.argument('files', nargs='*', help='Filename(s) to format.')
-@cli.entrypoint("Format C code according to QMK's style.")
-def main(cli):
-    """Format C code according to QMK's style.
+@cli.argument('-n', '--dry-run', arg_only=True, action='store_true', help="Flag only, don't automatically format.")
+@cli.argument('-b', '--base-branch', default='origin/master', help='Branch to compare to diffs to.')
+@cli.argument('-a', '--all-files', arg_only=True, action='store_true', help='Format all core files.')
+@cli.argument('--core-only', arg_only=True, action='store_true', help='Format core files only.')
+@cli.argument('files', nargs='*', arg_only=True, help='Filename(s) to format.')
+@cli.subcommand('Pointer to the new command name: qmk format-c.', hidden=True)
+def cformat(cli):
+    """Pointer to the new command name: qmk format-c.
     """
-    clang_format = ['clang-format', '-i']
+    cli.log.warning('"qmk cformat" has been renamed to "qmk format-c". Please use the new command in the future.')
+    argv = [sys.executable, *sys.argv]
+    argv[argv.index('cformat')] = 'format-c'
+    script_path = Path(argv[1])
+    script_path_exe = Path(f'{argv[1]}.exe')
 
-    # Find the list of files to format
-    if not cli.args.files:
-        for dir in ['drivers', 'quantum', 'tests', 'tmk_core']:
-            for dirpath, dirnames, filenames in os.walk(dir):
-                if 'tmk_core/protocol/usb_hid' in dirpath:
-                    continue
+    if not script_path.exists() and script_path_exe.exists():
+        # For reasons I don't understand ".exe" is stripped from the script name on windows.
+        argv[1] = str(script_path_exe)
 
-                for name in filenames:
-                    if name.endswith('.c') or name.endswith('.h') or name.endswith('.cpp'):
-                        cli.args.files.append(os.path.join(dirpath, name))
-
-    # Run clang-format on the files we've found
-    try:
-        subprocess.run(clang_format + cli.args.files, check=True)
-        cli.log.info('Successfully formatted the C code.')
-
-    except subprocess.CalledProcessError:
-        cli.log.error('Error formatting C code!')
-        return False
+    return cli.run(argv, capture_output=False).returncode

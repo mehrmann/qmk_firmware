@@ -25,7 +25,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #endif //KEYLOGGER_ENABLE
 
   switch (keycode) {
-  case KC_QWERTY ... KC_UNICODE:
+  case KC_QWERTY ... KC_PLOVER:
     if (record->event.pressed) {
       set_single_persistent_default_layer(keycode - KC_QWERTY);
     }
@@ -168,7 +168,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   case KC_OVERWATCH: // Toggle's if we hit "ENTER" or "BACKSPACE" to input macros
     if (record->event.pressed) { userspace_config.is_overwatch ^= 1; eeconfig_update_user(userspace_config.raw); }
 #ifdef RGBLIGHT_ENABLE
-    userspace_config.is_overwatch ? rgblight_mode_noeeprom(17) : rgblight_mode_noeeprom(18);
+//    userspace_config.is_overwatch ? rgblight_mode_noeeprom(17) : rgblight_mode_noeeprom(18);
 #endif //RGBLIGHT_ENABLE
     break;
   case KC_SALT:
@@ -214,24 +214,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 // Unicode
 #ifdef UNICODE_ENABLE
-  case UC_FLIP: // (ノಠ痊ಠ)ノ彡┻━┻
+  case UC_FLIP:
     if (record->event.pressed) {
-      send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
+      send_unicode_string("(ノಠ痊ಠ)ノ彡┻━┻");
     }
     break;
-  case UC_TABL: // ┬┬ノ( º _ ºノ)
+  case UC_TABL:
     if (record->event.pressed) {
-      send_unicode_hex_string("252C 2500 252C 30CE 0028 0020 00BA 0020 005F 0020 00BA 30CE 0029");
+      send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
     break;
-  case UC_SHRG: // ¯\_(ツ)_/¯
+  case UC_SHRG:
     if (record->event.pressed) {
-      send_unicode_hex_string("00AF 005C 005F 0028 30C4 0029 005F 002F 00AF");
+      send_unicode_string("¯\\_(ツ)_/¯");
     }
     break;
-  case UC_DISA: // ಠ_ಠ
+  case UC_DISA:
     if (record->event.pressed) {
-      send_unicode_hex_string("0CA0 005F 0CA0");
+      send_unicode_string("ಠ_ಠ");
     }
     break;
 #endif //!Unicode

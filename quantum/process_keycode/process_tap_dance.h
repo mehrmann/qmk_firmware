@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef PROCESS_TAP_DANCE_H
-#define PROCESS_TAP_DANCE_H
+
+#pragma once
 
 #ifdef TAP_DANCE_ENABLE
 
@@ -56,13 +56,19 @@ typedef struct {
 typedef struct {
     uint16_t kc;
     uint8_t  layer;
+    void (*layer_function)(uint8_t);
 } qk_tap_dance_dual_role_t;
 
 #    define ACTION_TAP_DANCE_DOUBLE(kc1, kc2) \
         { .fn = {qk_tap_dance_pair_on_each_tap, qk_tap_dance_pair_finished, qk_tap_dance_pair_reset}, .user_data = (void *)&((qk_tap_dance_pair_t){kc1, kc2}), }
 
 #    define ACTION_TAP_DANCE_DUAL_ROLE(kc, layer) \
-        { .fn = {qk_tap_dance_dual_role_on_each_tap, qk_tap_dance_dual_role_finished, qk_tap_dance_dual_role_reset}, .user_data = (void *)&((qk_tap_dance_dual_role_t){kc, layer}), }
+        { .fn = {qk_tap_dance_dual_role_on_each_tap, qk_tap_dance_dual_role_finished, qk_tap_dance_dual_role_reset}, .user_data = (void *)&((qk_tap_dance_dual_role_t){kc, layer, layer_move}), }
+
+#    define ACTION_TAP_DANCE_LAYER_TOGGLE(kc, layer) \
+        { .fn = {NULL, qk_tap_dance_dual_role_finished, qk_tap_dance_dual_role_reset}, .user_data = (void *)&((qk_tap_dance_dual_role_t){kc, layer, layer_invert}), }
+
+#    define ACTION_TAP_DANCE_LAYER_MOVE(kc, layer) ACTION_TAP_DANCE_DUAL_ROLE(kc, layer)
 
 #    define ACTION_TAP_DANCE_FN(user_fn) \
         { .fn = {NULL, user_fn, NULL}, .user_data = NULL, }
@@ -79,7 +85,7 @@ extern qk_tap_dance_action_t tap_dance_actions[];
 
 void preprocess_tap_dance(uint16_t keycode, keyrecord_t *record);
 bool process_tap_dance(uint16_t keycode, keyrecord_t *record);
-void matrix_scan_tap_dance(void);
+void tap_dance_task(void);
 void reset_tap_dance(qk_tap_dance_state_t *state);
 
 void qk_tap_dance_pair_on_each_tap(qk_tap_dance_state_t *state, void *user_data);
@@ -93,7 +99,5 @@ void qk_tap_dance_dual_role_reset(qk_tap_dance_state_t *state, void *user_data);
 #else
 
 #    define TD(n) KC_NO
-
-#endif
 
 #endif
